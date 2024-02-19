@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import useBookSlot from '../utils/useBookSlot';
+import GetAvailableSlots from './GetAvailableSlots';
 
 
 
@@ -10,9 +11,9 @@ const BookSlot = () => {
     const navigate = useNavigate();
 
     const [bookingData, setBookingData] = useState({
-        carSize: "Small",
+        carSize: "",
         floorNumber: 1,
-        carNumber: "KA01EE1111",
+        carNumber: "",
         slotNumber: "",
 
     });
@@ -47,7 +48,9 @@ const BookSlot = () => {
                         </p>
                     </div>
 
-
+                    <div className='w-3/4 border '>
+                       <GetAvailableSlots />
+                    </div>
                     <div className='w-3/4 bg-white border rounded-md p-8 text-[1vw]'>
                         <h1 className='text-xl sm:text-2xl md:text-3xl font-semibold md:font-bold leading-tight'>
                             Booking Slot

@@ -3,3 +3,6 @@
 /frontend/node_modules
 /frontend/dist
 /frontend/.parcel-cache
+/backend/controllers/AdminPanel.controller.js
+/backend/models/AdminPanel.model.js
+/backend/routes/AdminPanel.routes.js

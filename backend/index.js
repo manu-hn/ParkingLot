@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import "./connection/Database.connection.js";
 import UserRoutes from "./routes/User.routes.js";
 import ParkingSlotRoutes from "./routes/ParkingSlot.routes.js";
+// import AdminPanelRoutes from './routes/AdminPanel.routes.js';
 import cors from "cors";
 
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 app.use('/api/users', UserRoutes);
 app.use('/api/parking', ParkingSlotRoutes);
+// app.use('/api/admin/new-parking-lot', AdminPanelRoutes);
 
 app.use("*", (req, res, next) => {
     res.status(404).json({ error: true, message: "Error Page Not Found" })

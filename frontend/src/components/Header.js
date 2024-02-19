@@ -1,18 +1,22 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { logoutUser } from '../redux/slices/userSlice';
 
 const Header = () => {
   const { isAuthenticated } = useSelector(store => store.user);
   const navigate = useNavigate()
+  const dispatch = useDispatch();
 
   const logoutHandler = (e) => {
     e.preventDefault();
     try {
-      console.log("hello")
-      navigate('/')
-
+      dispatch(logoutUser())
       localStorage.removeItem('persist:root');
+      setTimeout(() => {
+        navigate('/')
+      }, 1000)
+
     } catch (error) {
       console.log(error)
     }
@@ -27,7 +31,7 @@ const Header = () => {
         <ul className='flex gap-3 justify-evenly'>
           <li className='text-xs sm:text-md md:text-lg'><Link to={'/about'}>About</Link></li>
           {
-            isAuthenticated ? <li className='text-xs sm:text-md md:text-lg cursor-pointer' onClick={logoutHandler}>Logout</li>
+            isAuthenticated ? <button className='text-xs sm:text-md md:text-lg cursor-pointer' onClick={logoutHandler}>Logout</button>
               :
               <li className='text-xs sm:text-md md:text-lg'><Link to={'/signup'}>Login</Link></li>
 

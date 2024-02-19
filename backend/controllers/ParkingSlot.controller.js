@@ -1,30 +1,46 @@
-import ParkingSlotModel from "../models/ParkingSlot.model.js";
+// import ParkingSlotModel, { ParkingSlotSchema } from "../models/ParkingSlot.model.js";
+// import mongoose from "mongoose";
 import { randomSlotNumberGenerator, randomFloorNumber } from "../utils/numberAlotmentHelper.js";
 import { config } from "dotenv";
+import ParkingSlotModel from "../models/ParkingSlot.model.js";
+// import { newParkingLotModel } from "./AdminPanel.controller.js";
+
 config()
 
 export const getParkingSlots = async (req, res, next) => {
     try {
-        const { floorNumber, carSize } = req.body;
-
-
-        const isSlotAvailable = await ParkingSlotModel.find({ floorNumber, carSize });
+        const { floorNumber, occupiedBay } = req.body;
+        
+        const isSlotAvailable = await ParkingSlotModel.find({ floorNumber, occupiedBay });
 
         let bookedSlots;
-        if (isSlotAvailable.length > 0) {
+        if (isSlotAvailable.length === 0) {
+            return res.status(200).json({
+                error: true, message: 'Success', slotsInfo: {
+                    availableSlots: process.env.MAX_SLOT ,
+                    baySize: occupiedBay.split(' ')[0],
+                    floorNumber: floorNumber,
+                    numberOfSlotsFree : process.env.MAX_SLOT - isSlotAvailable.length,
+                    bookedSlotNumber: 0
+                }
+            })
+
+        } else {
             bookedSlots = isSlotAvailable.map((slot) => {
                 return slot.slotNumber;
             });
-        } else {
-            return res.status(400).json({ error: true, message: 'No available parking slots' })
+            return res.status(200).json({
+                error: false, message: 'Success', slotsInfo: {
+                    availableSlots: process.env.MAX_SLOT ,
+                    baySize: occupiedBay.split(' ')[0],
+                    numberOfSlotsFree : process.env.MAX_SLOT - isSlotAvailable.length,
+                    floorNumber: isSlotAvailable[0].floorNumber,
+                    bookedSlotNumber: bookedSlots
+                }
+            })
         }
 
-        return res.status(200).json({
-            error: false, message: 'Success', slotsInfo: {
-                floorNumber: isSlotAvailable[0].floorNumber,
-                bookedSlotNumber: bookedSlots
-            }
-        })
+        
     } catch (error) {
         next(error);
     }
@@ -71,8 +87,8 @@ async function slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNu
 
 export const bookParkingSlot = async (req, res, next) => {
     try {
-        
-        let { userRef, carSize, carNumber, floorNumber, slotNumber, ownerName, ownerEmail } = req.body;
+
+        let { userRef, carSize, carNumber, floorNumber, slotNumber, ownerName, ownerEmail, selectedSystem } = req.body;
         const price = carSize === 'Small' ? 100 : (carSize === 'Medium' ? 200 : (carSize === 'Large' ? 300 : (carSize === 'XLarge' && 500)))
 
         const isSmallSlotAvailable = await ParkingSlotModel.find({ floorNumber, occupiedBay: 'Small Bay' });
@@ -86,18 +102,18 @@ export const bookParkingSlot = async (req, res, next) => {
 
         if (isLargeSlotAvailable.length >= process.env.MAX_SLOT && (carSize === 'Small' || carSize === 'Medium' || carSize === 'Large')) {
 
-            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "XLarge Bay", price, ownerName, ownerEmail)
+            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "XLarge Bay", price, ownerName, ownerEmail, selectedSystem)
             return res.status(response?.statusCode).json(response.jsonMsg)
         }
 
         if (isMediumSlotAvailable.length >= process.env.MAX_SLOT && (carSize === 'Small' || carSize === 'Medium')) {
 
-            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "Large Bay", price,ownerName, ownerEmail)
+            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "Large Bay", price, ownerName, ownerEmail, selectedSystem)
             return res.status(response?.statusCode).json(response.jsonMsg)
         }
 
         if (isSmallSlotAvailable.length >= process.env.MAX_SLOT && carSize === 'Small') {
-            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "Medium Bay",price, ownerName, ownerEmail)
+            const response = await slotBookerForAll(carSize, slotNumber, floorNumber, userRef, carNumber, "Medium Bay", price, ownerName, ownerEmail, selectedSystem)
             return res.status(response?.statusCode).json(response.jsonMsg)
         }
 
@@ -114,7 +130,7 @@ export const bookParkingSlot = async (req, res, next) => {
             }
 
             if (!isSlotAvailable) {
-                const bookedSlot = await slotBookingHelper(slotNumber, floorNumber, userRef, carSize, carNumber, carSize + " Bay", price, ownerName, ownerEmail);
+                const bookedSlot = await slotBookingHelper(slotNumber, floorNumber, userRef, carSize, carNumber, carSize + " Bay", price, ownerName, ownerEmail, selectedSystem);
                 return res.status(200).json({
                     error: false, message: 'Success', data: bookedSlot
                 });

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 
-const ParkingSlotSchema = new Schema({
+export const ParkingSlotSchema = new Schema({
   userRef: { type: String, required: true },
   carSize: { type: String, enum: ['Small', 'Medium', 'Large', 'XLarge'], required: true },
   isSlotBooked: {

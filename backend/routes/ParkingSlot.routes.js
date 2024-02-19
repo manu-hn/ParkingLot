@@ -4,7 +4,7 @@ import { bookParkingSlot, getParkingSlots } from "../controllers/ParkingSlot.con
 
 const router= Router();
 
-router.get('/get-slots', getParkingSlots);
+router.post('/get-slots', getParkingSlots);
 router.post('/book-slot', bookParkingSlot);
 
 export default router;
