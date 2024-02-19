@@ -2,7 +2,6 @@
   "name": "frontend",
   "version": "1.0.0",
   "description": "Frontend Code with React for ParkSync",
-  "main": "index.js",
   "scripts": {
     "test": "jest",
     "start": "npx parcel public/index.html",
@@ -32,6 +31,7 @@
     "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.7",
     "dotenv": "^16.4.4",
+    "parkinglot": "file:..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.0",
